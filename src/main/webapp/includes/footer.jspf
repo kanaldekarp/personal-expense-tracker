@@ -1,0 +1,21 @@
+<!-- footer.jspf -->
+</div><!-- /.container -->
+</div><!-- /.page-wrapper -->
+
+<footer class="main-footer">
+    <p>&copy; 2026 QuickExpense &mdash; Professional Expense Management. All rights reserved.</p>
+    <div class="footer-icons">
+        <a href="https://instagram.com" target="_blank" title="Instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://wa.me/" target="_blank" title="WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="https://github.com" target="_blank" title="GitHub">
+            <i class="fab fa-github"></i>
+        </a>
+        <a href="mailto:support@quickexpense.com" title="Email">
+            <i class="fas fa-envelope"></i>
+        </a>
+    </div>
+</footer>

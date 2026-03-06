@@ -1,0 +1,26 @@
+# ========================================
+# QuickExpense — Local Development Config
+# ========================================
+# Copy this file to db.properties and fill in your values:
+#   cp db.properties.example db.properties
+#
+# In production (Render), these are set via environment variables.
+
+# Database
+db.url=jdbc:postgresql://localhost:5432/quickexpense
+db.user=postgres
+db.password=YOUR_DB_PASSWORD
+db.driver=org.postgresql.Driver
+
+# SMTP Email Configuration
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=587
+mail.smtp.auth=true
+mail.smtp.starttls=true
+mail.sender.email=your-email@gmail.com
+mail.sender.password=YOUR_GMAIL_APP_PASSWORD
+mail.sender.name=QuickExpense
+
+# App Configuration
+app.name=QuickExpense
+app.secret=CHANGE_ME_IN_PRODUCTION

@@ -1,0 +1,8 @@
+Expense Report from 2026-01-08 to 2026-02-07
+====================================
+Date: 2026-01-19 | Category: Health | Amount: 483.00 | Description: Online Course
+Date: 2026-02-03 | Category: Entertainment | Amount: 495.00 | Description: Movie Ticket
+Date: 2026-01-09 | Category: Shopping | Amount: 336.00 | Description: Amazon Order
+Date: 2026-02-05 | Category: Travel | Amount: 253.00 | Description: Electricity Bill
+====================================
+Total Expense: 1567.00

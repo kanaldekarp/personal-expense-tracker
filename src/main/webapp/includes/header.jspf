@@ -1,0 +1,128 @@
+<!-- header.jspf -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<nav class="main-navbar">
+    <div class="logo-section">
+        <div class="auth-logo" style="width:36px;height:36px;margin:0;font-size:1rem;border-radius:8px;">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <span class="app-name">QuickExpense</span>
+    </div>
+
+    <div class="nav-links" id="navLinks">
+        <a href="DashboardServlet"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="addExpense.jsp"><i class="fas fa-plus-circle"></i> Add Expense</a>
+        <a href="viewExpenses.jsp"><i class="fas fa-list-alt"></i> Expenses</a>
+        <a href="income.jsp"><i class="fas fa-wallet"></i> Income</a>
+        <a href="recurring.jsp"><i class="fas fa-sync-alt"></i> Recurring</a>
+        <a href="budget.jsp"><i class="fas fa-piggy-bank"></i> Budget</a>
+        <a href="goals.jsp"><i class="fas fa-bullseye"></i> Goals</a>
+        <a href="profile.jsp"><i class="fas fa-user"></i> Profile</a>
+        <a href="logout.jsp" class="nav-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;">
+        <%-- User Profile Badge --%>
+        <%
+            String _hdrUser = null;
+            String _hdrEmail = null;
+            if (session != null) {
+                _hdrUser = (String) session.getAttribute("username");
+                _hdrEmail = (String) session.getAttribute("userEmail");
+            }
+            if (_hdrUser != null) {
+                String _initial = _hdrUser.substring(0, 1).toUpperCase();
+        %>
+        <div class="user-badge" title="<%= _hdrEmail != null ? _hdrEmail : _hdrUser %>">
+            <div class="user-avatar"><%= _initial %></div>
+            <span class="user-badge-name"><%= _hdrUser %></span>
+        </div>
+        <%-- Currency Selector --%>
+        <form action="CurrencyServlet" method="post" style="margin:0;">
+            <select name="currency" onchange="this.form.submit()" title="Change Currency"
+                    style="padding:4px 8px;border-radius:6px;border:1px solid var(--gray-200);font-size:0.78rem;background:var(--bg-primary);color:var(--text-primary);cursor:pointer;">
+                <%
+                    String _selCur = (String) session.getAttribute("currency");
+                    if (_selCur == null) _selCur = "INR";
+                    String[][] _currencies = {{"INR","\u20B9"},{"USD","$"},{"EUR","\u20AC"},{"GBP","\u00A3"},{"JPY","\u00A5"},{"AUD","A$"},{"CAD","C$"},{"CHF","CHF"},{"CNY","\u00A5"},{"BTC","\u20BF"}};
+                    for (String[] c : _currencies) {
+                %>
+                <option value="<%= c[0] %>" <%= c[0].equals(_selCur) ? "selected" : "" %>><%= c[1] %> <%= c[0] %></option>
+                <% } %>
+            </select>
+        </form>
+        <% } %>
+        <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <button class="hamburger" id="hamburgerBtn" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</nav>
+<div class="nav-overlay" id="navOverlay" onclick="toggleMenu()"></div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="page-wrapper">
+<div class="container">
+
+<script>
+// Theme Toggle
+function toggleTheme() {
+    const html = document.documentElement;
+    const icon = document.getElementById('themeIcon');
+    if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        icon.className = 'fas fa-moon';
+        localStorage.setItem('theme', 'light');
+    } else {
+        html.setAttribute('data-theme', 'dark');
+        icon.className = 'fas fa-sun';
+        localStorage.setItem('theme', 'dark');
+    }
+}
+// Apply saved theme
+(function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = 'fas fa-sun';
+    }
+})();
+
+// Mobile Menu
+function toggleMenu() {
+    const nav = document.getElementById('navLinks');
+    const overlay = document.getElementById('navOverlay');
+    const btn = document.getElementById('hamburgerBtn');
+    nav.classList.toggle('active');
+    overlay.classList.toggle('active');
+    btn.classList.toggle('active');
+}
+
+// Toast Notification
+function showToast(message, type) {
+    type = type || 'info';
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+    toast.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i><span>' + message + '</span><button class="toast-close" onclick="this.parentElement.remove()">&times;</button>';
+    container.appendChild(toast);
+    setTimeout(function() { if (toast.parentElement) toast.remove(); }, 5000);
+}
+
+// Auto-show toast from URL params
+(function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error')) showToast(params.get('error'), 'error');
+    if (params.get('message')) showToast(params.get('message'), 'success');
+})();
+</script>

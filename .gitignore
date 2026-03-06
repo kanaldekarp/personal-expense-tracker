@@ -1,0 +1,32 @@
+# Build output
+target/
+build/
+bin/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Compiled
+*.class
+*.jar
+*.war
+
+# Logs
+*.log
+
+# Local config with credentials (use environment variables in production)
+**/db.properties
+!**/db.properties.example
+
+# Docker
+.dockerignore
