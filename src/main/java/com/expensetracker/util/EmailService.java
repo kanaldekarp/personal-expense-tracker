@@ -16,43 +16,34 @@ public class EmailService {
     private static final Properties config = new Properties();
     private static Session mailSession;
 
-    /**
-     * Get config value: environment variable > db.properties > default.
-     */
-    private static String getConfig(String envKey, String propKey, String defaultVal) {
-        String envVal = System.getenv(envKey);
-        if (envVal != null && !envVal.isEmpty()) return envVal;
-        return config.getProperty(propKey, defaultVal);
-    }
-
     static {
         try (InputStream input = EmailService.class.getClassLoader().getResourceAsStream("db.properties")) {
             if (input != null) {
                 config.load(input);
             } else {
-                System.out.println("EmailService: db.properties not found, using environment variables");
+                System.out.println("EmailService: db.properties not found");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Configure SMTP session (env vars override db.properties)
+        // Configure SMTP session
         Properties smtpProps = new Properties();
-        smtpProps.put("mail.smtp.host", getConfig("SMTP_HOST", "mail.smtp.host", "smtp.gmail.com"));
-        smtpProps.put("mail.smtp.port", getConfig("SMTP_PORT", "mail.smtp.port", "587"));
-        smtpProps.put("mail.smtp.auth", getConfig("SMTP_AUTH", "mail.smtp.auth", "true"));
-        smtpProps.put("mail.smtp.starttls.enable", getConfig("SMTP_STARTTLS", "mail.smtp.starttls", "true"));
+        smtpProps.put("mail.smtp.host", config.getProperty("mail.smtp.host", "smtp.gmail.com"));
+        smtpProps.put("mail.smtp.port", config.getProperty("mail.smtp.port", "587"));
+        smtpProps.put("mail.smtp.auth", config.getProperty("mail.smtp.auth", "true"));
+        smtpProps.put("mail.smtp.starttls.enable", config.getProperty("mail.smtp.starttls", "true"));
         smtpProps.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         smtpProps.put("mail.smtp.connectiontimeout", "10000");
         smtpProps.put("mail.smtp.timeout", "10000");
 
-        final String senderEmail = getConfig("SMTP_EMAIL", "mail.sender.email", "");
-        final String senderPassword = getConfig("SMTP_PASSWORD", "mail.sender.password", "");
-
         mailSession = Session.getInstance(smtpProps, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderEmail, senderPassword);
+                return new PasswordAuthentication(
+                    config.getProperty("mail.sender.email"),
+                    config.getProperty("mail.sender.password")
+                );
             }
         });
     }
@@ -74,8 +65,8 @@ public class EmailService {
     private static boolean sendHtmlEmail(String toEmail, String subject, String body, boolean isHtml) {
         try {
             Message message = new MimeMessage(mailSession);
-            String senderName = getConfig("SMTP_SENDER_NAME", "mail.sender.name", "QuickExpense");
-            String senderEmail = getConfig("SMTP_EMAIL", "mail.sender.email", "");
+            String senderName = config.getProperty("mail.sender.name", "QuickExpense");
+            String senderEmail = config.getProperty("mail.sender.email");
             message.setFrom(new InternetAddress(senderEmail, senderName));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);
@@ -102,8 +93,8 @@ public class EmailService {
     public static boolean sendEmailWithAttachment(String toEmail, String subject, String htmlBody, File attachment) {
         try {
             Message message = new MimeMessage(mailSession);
-            String senderName = getConfig("SMTP_SENDER_NAME", "mail.sender.name", "QuickExpense");
-            String senderEmail = getConfig("SMTP_EMAIL", "mail.sender.email", "");
+            String senderName = config.getProperty("mail.sender.name", "QuickExpense");
+            String senderEmail = config.getProperty("mail.sender.email");
             message.setFrom(new InternetAddress(senderEmail, senderName));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
             message.setSubject(subject);
